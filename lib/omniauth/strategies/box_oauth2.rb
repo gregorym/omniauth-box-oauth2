@@ -52,8 +52,10 @@ module OmniAuth
               # Create a test file to share
               test_filename = "direct_link_test_#{Time.current.to_i}"
               io = StringIO.new("test")
-              payload = { :filename => Faraday::UploadIO.new(io, "text/plain", test_filename), :parent_id => 0 }
-              resp = access_token.post('files/content', {:body=>payload})
+              payload = {}
+              payload[:file] = Faraday::UploadIO.new(io, "text/plain", test_filename)
+              payload[:attributes] = {:name => test_filename, :parent => {:id => 0}}.to_json
+              resp = access_token.post('https://upload.box.com/api/2.0/files/content', {:body=>payload})
               if resp.status == 201
                 # Now try to share that file.
                 file_info = resp.parsed['entries'].first
