@@ -18,6 +18,16 @@ module OmniAuth
       }
       option :check_direct_link_support, false
 
+      def authorize_params
+        super.tap do |params|
+          %w[scope].each do |v|
+            if request.params[v]
+              params[v.to_sym] = request.params[v]
+            end
+          end
+        end
+      end
+
       def callback_url
         super.sub('http:', 'https:')
       end
